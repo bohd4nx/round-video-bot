@@ -1,9 +1,10 @@
 from aiogram import Router
 
-from . import help, start
+from .help import router as help_router
+from .start import router as start_router
 
 router = Router(name=__name__)
 router.include_routers(
-    help.router,
-    start.router,
+    help_router,
+    start_router,
 )
