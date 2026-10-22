@@ -1,64 +1,50 @@
-import logging
-
-from aiogram import Bot, F, Router
-from aiogram.exceptions import TelegramBadRequest
-from aiogram.filters import StateFilter
-from aiogram.fsm.context import FSMContext
+from aiogram import Bot, Router
 from aiogram.types import CallbackQuery, Message
 from aiogram_i18n import I18nContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.database.download import DownloadCreate, add_download
+from bot.database.user import UserCreate, upsert_user
+from bot.keyboards import OverlayCallback
 from bot.services import process_and_send
-from bot.services.download import download_tg_video
 
-from .states import VideoState
-
-logger = logging.getLogger(__name__)
 router = Router(name=__name__)
 
 
-@router.callback_query(StateFilter(VideoState.waiting_overlay), F.data.startswith("overlay:"))
+@router.callback_query(OverlayCallback.filter())
 async def overlay_chosen(
     callback: CallbackQuery,
-    state: FSMContext,
+    callback_data: OverlayCallback,
     i18n: I18nContext,
     bot: Bot,
     session: AsyncSession,
 ) -> None:
-    if not isinstance(callback.message, Message) or callback.data is None:
+    await callback.answer()
+
+    prompt = callback.message
+    if not isinstance(prompt, Message):
         return
 
-    overlay = callback.data.split(":")[1]
-    data = await state.get_data()
-    await state.clear()
+    video_msg = prompt.reply_to_message
+    if video_msg is None or video_msg.video is None:
+        # Original video was deleted — nothing to process
+        await prompt.delete()
+        return
 
-    await callback.message.edit_text(i18n.get("processing"), reply_markup=None)
+    video = video_msg.video
+    await prompt.edit_text(i18n.get("processing"), reply_markup=None)
 
-    try:
-        source = await download_tg_video(data["video_file_id"], bot)
-    except TelegramBadRequest as e:
-        if "file is too big" in str(e).lower():
-            size_mb = round(data["video_file_size"] / (1024 * 1024), 1)
-            await callback.message.edit_text(i18n.get("error-file-too-large", size=size_mb))
-            return
-        raise
-
-    await process_and_send(
-        source=source,
-        chat_id=callback.message.chat.id,
-        original_msg_id=data["video_message_id"],
-        status_msg=callback.message,
-        overlay=overlay,
+    ok = await process_and_send(
+        file_id=video.file_id,
+        video_msg=video_msg,
+        status_msg=prompt,
+        overlay=callback_data.overlay,
         i18n=i18n,
         bot=bot,
     )
-    if callback.from_user:
-        await add_download(
-            session,
-            DownloadCreate(
-                user_id=callback.from_user.id,
-                content_type="video_file",
-                content_id=data["video_file_id"],
-            ),
-        )
+    if not ok:
+        return
+
+    user = callback.from_user
+    await upsert_user(session, UserCreate(user_id=user.id, username=user.username))
+    await add_download(session, DownloadCreate(user_id=user.id, content_type="video_file", content_id=video.file_id))

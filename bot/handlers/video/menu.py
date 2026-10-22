@@ -1,29 +1,21 @@
-import logging
-
 from aiogram import F, Router
-from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import Message, Video
 from aiogram_i18n import I18nContext
 
+from bot.core.constants import MAX_FILE_SIZE_BYTES
 from bot.keyboards import overlay_keyboard
 
-from .states import VideoState
-
-logger = logging.getLogger(__name__)
 router = Router(name=__name__)
 
 
-@router.message(F.video)
-async def video_received(message: Message, state: FSMContext, i18n: I18nContext) -> None:
-    if message.video is None:
+@router.message(F.video.as_("video"))
+async def video_received(message: Message, video: Video, i18n: I18nContext) -> None:
+    size = video.file_size or 0
+    if size > MAX_FILE_SIZE_BYTES:
+        await message.reply(i18n.get("error-file-too-large", size=round(size / (1024 * 1024), 1)))
         return
 
-    await state.set_state(VideoState.waiting_overlay)
-    await state.update_data(
-        video_message_id=message.message_id,
-        video_file_id=message.video.file_id,
-        video_file_size=message.video.file_size,
-    )
+    # The prompt replies to the video, so the callback can find it via reply_to_message
     await message.reply(
         i18n.get("overlay-choose"),
         reply_markup=overlay_keyboard(i18n),

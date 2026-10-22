@@ -1,30 +1,22 @@
-from pathlib import Path
-
 import ffmpeg
 
-_SIZE = 640
-_CROP = "min(in_w,in_h)"
-_CROP_X = "(in_w-min(in_w,in_h))/2"
-_CROP_Y = "(in_h-min(in_w,in_h))/2"
+from .constants import CIRCLE_MASK_PATH, CROP_SIZE, CROP_X, CROP_Y, PLANE_PATH, VIDEO_OUTPUT_SIZE
+from .enums import Overlay
 
 
 def _crop_square(stream: ffmpeg.nodes.FilterableStream) -> ffmpeg.nodes.FilterableStream:
     return (
-        stream.video.filter("crop", _CROP, _CROP, _CROP_X, _CROP_Y)
-        .filter("scale", _SIZE, _SIZE, flags="lanczos")
+        stream.video.filter("crop", CROP_SIZE, CROP_SIZE, CROP_X, CROP_Y)
+        .filter("scale", VIDEO_OUTPUT_SIZE, VIDEO_OUTPUT_SIZE, flags="lanczos")
         .filter("setsar", "1/1")
     )
 
 
-def android_filters(
-    src: ffmpeg.nodes.FilterableStream,
-    files_dir: Path,
-) -> ffmpeg.nodes.FilterableStream:
-    plane = ffmpeg.input(str(files_dir / "plane.apng"), stream_loop=-1)
-    circle_mask = ffmpeg.input(str(files_dir / "overlay.png"))
+def android_filters(src: ffmpeg.nodes.FilterableStream) -> ffmpeg.nodes.FilterableStream:
+    plane = ffmpeg.input(str(PLANE_PATH), stream_loop=-1)
+    circle_mask = ffmpeg.input(str(CIRCLE_MASK_PATH))
 
-    # Crop to square, scale to 640 (keep -1 for blur bg, then scale up)
-    base = src.video.filter("crop", _CROP, _CROP, _CROP_X, _CROP_Y).filter("scale", _SIZE, -1, flags="lanczos").split()
+    base = _crop_square(src).split()
 
     # Background: tiny blur vignette
     background = (
@@ -32,29 +24,22 @@ def android_filters(
         .filter("scale", 48, 48, flags="bilinear")
         .filter("eq", brightness=-0.25)
         .filter("gblur", sigma=3, steps=2)
-        .filter("scale", _SIZE, _SIZE, flags="fast_bilinear")
+        .filter("scale", VIDEO_OUTPUT_SIZE, VIDEO_OUTPUT_SIZE, flags="fast_bilinear")
     )
 
     foreground = ffmpeg.filter([base[0], circle_mask], "alphamerge")
     return background.overlay(plane, shortest=1).overlay(foreground)
 
 
-def ios_filters(
-    src: ffmpeg.nodes.FilterableStream,
-    files_dir: Path,
-) -> ffmpeg.nodes.FilterableStream:
+def ios_filters(src: ffmpeg.nodes.FilterableStream) -> ffmpeg.nodes.FilterableStream:
     # Same circle mask as Android, but composited on white instead of blurred bg
-    circle_mask = ffmpeg.input(str(files_dir / "overlay.png"))
-    white_bg = ffmpeg.input(f"color=c=white:s={_SIZE}x{_SIZE}:r=60", f="lavfi")
+    circle_mask = ffmpeg.input(str(CIRCLE_MASK_PATH))
+    white_bg = ffmpeg.input(f"color=c=white:s={VIDEO_OUTPUT_SIZE}x{VIDEO_OUTPUT_SIZE}:r=60", f="lavfi")
     circle = ffmpeg.filter([_crop_square(src), circle_mask], "alphamerge")
     return white_bg.overlay(circle, shortest=1)
 
 
-def build_filter_graph(
-    src: ffmpeg.nodes.FilterableStream,
-    files_dir: Path,
-    overlay_type: str,
-) -> ffmpeg.nodes.FilterableStream:
-    if overlay_type == "ios":
-        return ios_filters(src, files_dir)
-    return android_filters(src, files_dir)
+def build_filter_graph(src: ffmpeg.nodes.FilterableStream, overlay: Overlay) -> ffmpeg.nodes.FilterableStream:
+    if overlay is Overlay.IOS:
+        return ios_filters(src)
+    return android_filters(src)
