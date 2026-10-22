@@ -7,7 +7,7 @@
 [![Forks](https://img.shields.io/github/forks/bohd4nx/Telegram-Video-Bot?style=flat&color=blue&label=Forks)](https://github.com/bohd4nx/Telegram-Video-Bot/forks)
 [![Telegram](https://img.shields.io/badge/demo-@RoundMsgBot-blue?style=flat&logo=telegram)](https://t.me/RoundMsgBot)
 
-Telegram bot that converts videos and social media links into **round video notes**.
+Telegram bot that converts videos into **round video notes**.
 
 **[Try Demo](https://t.me/RoundMsgBot)** · **[Report Bug](https://github.com/bohd4nx/Telegram-Video-Bot/issues)**
 
@@ -17,7 +17,7 @@ Telegram bot that converts videos and social media links into **round video note
 
 ## Features
 
-- Converts any video file or TikTok / Instagram / YouTube Shorts link into a round note
+- Converts any video into a round note
 - iOS and Android overlay styles — user picks per video
 - Videos longer than 60 s are auto-split into sequential notes
 - Russian and English, auto-detected from Telegram locale

@@ -1,13 +1,9 @@
 start =
     <tg-emoji emoji-id="5469774158650942877">🤙</tg-emoji> <b>Hello, { $name }!</b>
 
-    <blockquote>Send me a video or a link — I’ll convert it into a round video message (a “circle”) ready to send in any Telegram chat.
+    <blockquote>Send me a video — I’ll convert it into a round video message (a “circle”) ready to send in any Telegram chat.
 
-    Supported sources:
-    • Video file sent directly
-    • TikTok, Instagram Reels, YouTube Shorts links
-
-    Just drop a video or a link, pick a style, and get your circle in seconds.</blockquote>
+    Just drop a video, pick a style, and get your circle in seconds.</blockquote>
 
 help =
     <tg-emoji emoji-id="5373039692574893940">👨‍🏫</tg-emoji>  <b>Video requirements</b>
@@ -16,7 +12,6 @@ help =
     • <b>Quality:</b> 480p is enough; higher resolution only slows things down
     • <b>Duration:</b> up to 60 seconds per circle (longer videos are split automatically)
     • <b>Size:</b> up to 20 MB
-    • <b>Links:</b> TikTok, Instagram Reels, YouTube Shorts — just paste a URL
 
     <blockquote><tg-emoji emoji-id="5472146462362048818">💡</tg-emoji> Shorter and lighter videos process faster and produce sharper circles. If quality matters — keep it under 15 MB and 30 seconds.</blockquote>
 
@@ -44,20 +39,6 @@ processing =
 
     <blockquote>Usually takes 5–10 seconds depending on the video length and size. The circle will appear here as soon as it's ready — please wait.</blockquote>
 
-link-downloading =
-    <tg-emoji emoji-id="5451732530048802485">⏳</tg-emoji> <b>Downloading video…</b>
-
-    <blockquote>Fetching the video from the link. Usually takes a few seconds.</blockquote>
-
-error-link-download =
-    <tg-emoji emoji-id="5465665476971471368">❌</tg-emoji> <b>Couldn’t download the video.</b>
-
-    <blockquote>The link may be private, expired, or from an unsupported platform. Try a different link.</blockquote>
-error-daily-limit =
-    <tg-emoji emoji-id="5465665476971471368">❌</tg-emoji> <b>Daily limit reached.</b>
-
-    <blockquote>You can download up to { $limit } videos via link per day. Come back tomorrow!</blockquote>
-
 error-processing =
     <tg-emoji emoji-id="5465665476971471368">❌</tg-emoji> <b>Something went wrong while processing your video.</b>
 
@@ -80,12 +61,3 @@ unknown-input =
 btn-android = Android — transparent background
 btn-ios = iOS — white background
 
-link-downloading =
-    <tg-emoji emoji-id="5451732530048802485">⏳</tg-emoji> <b>Downloading video…</b>
-
-    <blockquote>Fetching the video from the link. Usually takes a few seconds.</blockquote>
-
-error-link-download =
-    <tg-emoji emoji-id="5465665476971471368">❌</tg-emoji> <b>Couldn’t download the video.</b>
-
-    <blockquote>The link may be private, expired, or from an unsupported platform. Try a different link.</blockquote>
