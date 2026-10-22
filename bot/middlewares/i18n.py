@@ -5,7 +5,7 @@ from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 from aiogram_i18n import I18nContext
 
-from app.core.constants import DEFAULT_LOCALE, SUPPORTED_LOCALES
+from bot.core.constants import DEFAULT_LOCALE, SUPPORTED_LOCALES
 
 
 def detect_locale(lang_code: str | None) -> str:

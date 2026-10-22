@@ -1,4 +1,4 @@
-from app.services.errors import DownloadError, FileTooLargeError
+from bot.services.errors import DownloadError, FileTooLargeError
 
 from .file import download_tg_video
 from .url import download_url, extract_url

@@ -6,7 +6,7 @@ from aiogram.enums import ChatAction
 from aiogram.types import FSInputFile, Message
 from aiogram_i18n import I18nContext
 
-from app.core.constants import VIDEO_OUTPUT_SIZE
+from bot.core.constants import VIDEO_OUTPUT_SIZE
 
 from .errors import handle_errors
 from .video.encode import encode_all_segments

@@ -1,34 +1,24 @@
 import logging
-from pathlib import Path
 
 from aiogram import Bot, F, Router
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from aiogram_i18n import I18nContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.download import DownloadCreate, add_download
-from app.services import process_and_send
+from bot.database.download import DownloadCreate, add_download
+from bot.services import process_and_send
+from bot.services.download import download_tg_video
 
-from .states import LinkState
+from .states import VideoState
 
 logger = logging.getLogger(__name__)
 router = Router(name=__name__)
 
 
-def _content_type_from_url(url: str) -> str:
-    u = url.lower()
-    if "tiktok.com" in u:
-        return "tiktok"
-    if "instagram.com" in u:
-        return "instagram"
-    if "youtube.com" in u or "youtu.be" in u:
-        return "youtube_shorts"
-    return "url"
-
-
-@router.callback_query(StateFilter(LinkState.waiting_overlay), F.data.startswith("overlay:"))
+@router.callback_query(StateFilter(VideoState.waiting_overlay), F.data.startswith("overlay:"))
 async def overlay_chosen(
     callback: CallbackQuery,
     state: FSMContext,
@@ -45,22 +35,30 @@ async def overlay_chosen(
 
     await callback.message.edit_text(i18n.get("processing"), reply_markup=None)
 
+    try:
+        source = await download_tg_video(data["video_file_id"], bot)
+    except TelegramBadRequest as e:
+        if "file is too big" in str(e).lower():
+            size_mb = round(data["video_file_size"] / (1024 * 1024), 1)
+            await callback.message.edit_text(i18n.get("error-file-too-large", size=size_mb))
+            return
+        raise
+
     await process_and_send(
-        source=Path(data["local_source"]),
+        source=source,
         chat_id=callback.message.chat.id,
-        original_msg_id=data["link_message_id"],
+        original_msg_id=data["video_message_id"],
         status_msg=callback.message,
         overlay=overlay,
         i18n=i18n,
         bot=bot,
     )
     if callback.from_user:
-        url = data.get("source_url", "")
         await add_download(
             session,
             DownloadCreate(
                 user_id=callback.from_user.id,
-                content_type=_content_type_from_url(url),
-                content_id=url or None,
+                content_type="video_file",
+                content_id=data["video_file_id"],
             ),
         )

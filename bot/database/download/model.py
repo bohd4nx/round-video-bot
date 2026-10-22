@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 from sqlalchemy import BigInteger, DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.database.base import Base
+from bot.database.base import Base
 
 if TYPE_CHECKING:
-    from app.database.user.model import User
+    from bot.database.user.model import User
 
 
 class Download(Base):

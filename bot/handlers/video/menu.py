@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from aiogram_i18n import I18nContext
 
-from app.keyboards import overlay_keyboard
+from bot.keyboards import overlay_keyboard
 
 from .states import VideoState
 

@@ -3,8 +3,8 @@ from datetime import datetime, timezone
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.download.model import Download
-from app.database.download.schemas import DownloadCreate
+from bot.database.download.model import Download
+from bot.database.download.schemas import DownloadCreate
 
 
 async def add_download(session: AsyncSession, dto: DownloadCreate) -> None:

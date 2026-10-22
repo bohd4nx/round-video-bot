@@ -6,8 +6,8 @@ import ffmpeg
 from aiogram import Bot
 from aiogram.enums import ChatAction
 
-from app.core.constants import SEGMENT_DURATION
-from app.services.video.filters import build_filter_graph
+from bot.core.constants import SEGMENT_DURATION
+from bot.services.video.filters import build_filter_graph
 
 logger = logging.getLogger(__name__)
 

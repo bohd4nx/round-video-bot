@@ -2,8 +2,8 @@ from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.user.model import User
-from app.database.user.schemas import UserCreate
+from bot.database.user.model import User
+from bot.database.user.schemas import UserCreate
 
 
 async def upsert_user(session: AsyncSession, dto: UserCreate) -> User:

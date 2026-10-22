@@ -6,8 +6,8 @@ from pathlib import Path
 
 import yt_dlp
 
-from app.core.constants import MAX_FILE_SIZE_BYTES, URL_PATTERN, YT_DLP_MIN_INTERVAL
-from app.services.errors import DownloadError, FileTooLargeError
+from bot.core.constants import MAX_FILE_SIZE_BYTES, URL_PATTERN, YT_DLP_MIN_INTERVAL
+from bot.services.errors import DownloadError, FileTooLargeError
 
 
 class URLDownloader:

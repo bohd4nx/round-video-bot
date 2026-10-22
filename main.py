@@ -8,15 +8,15 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram_i18n import I18nMiddleware
 from aiogram_i18n.cores.fluent_compile_core import FluentCompileCore
 
-from app.core import (
+from bot.core import (
     config,
     logger,
     setup_bot_profile,  # noqa: F401
     setup_logging,
 )
-from app.database import close_db, init_db
-from app.handlers import router
-from app.middlewares import DatabaseMiddleware, LocaleMiddleware
+from bot.database import close_db, init_db
+from bot.handlers import router
+from bot.middlewares import DatabaseMiddleware, LocaleMiddleware
 
 
 async def build_dispatcher(bot: Bot) -> tuple[Dispatcher, I18nMiddleware]:
