@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def create_bot() -> Bot:
     return Bot(
-        token=config.BOT_TOKEN,
+        token=config.bot_token.get_secret_value(),
         default=DefaultBotProperties(
             parse_mode=ParseMode.HTML,
             link_preview_is_disabled=True,

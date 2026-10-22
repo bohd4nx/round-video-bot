@@ -1,9 +1,17 @@
+from sqlalchemy import URL
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
 from bot.core import config
 
-DATABASE_URL = f"postgresql+asyncpg://{config.POSTGRES_USER}:{config.POSTGRES_PASSWORD}@{config.POSTGRES_HOST}:{config.POSTGRES_PORT}/{config.POSTGRES_DB}"
+DATABASE_URL = URL.create(
+    "postgresql+asyncpg",
+    username=config.postgres_user,
+    password=config.postgres_password.get_secret_value(),
+    host=config.postgres_host,
+    port=config.postgres_port,
+    database=config.postgres_db,
+)
 
 engine = create_async_engine(
     DATABASE_URL,
@@ -21,7 +29,7 @@ class Base(DeclarativeBase):
     pass
 
 
-async def init_db() -> None:  # used in main.py on startup; in prod prefer alembic migrations
+async def init_db() -> None:  # used in bot/app.py on startup; in prod prefer alembic migrations
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 

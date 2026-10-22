@@ -43,18 +43,3 @@ docker compose up -d
 pip install .
 python main.py
 ```
-
----
-
-## Configuration
-
-| Variable            | Required | Default | Description                                     |
-| ------------------- | -------- | ------- | ----------------------------------------------- |
-| `BOT_TOKEN`         | ✅       | —       | Token from [@BotFather](https://t.me/BotFather) |
-| `POSTGRES_USER`     | ✅       | —       | PostgreSQL username                             |
-| `POSTGRES_PASSWORD` | ✅       | —       | PostgreSQL password                             |
-| `POSTGRES_DB`       | ✅       | —       | PostgreSQL database name                        |
-| `POSTGRES_HOST`     | —        | `db`    | PostgreSQL host                                 |
-| `POSTGRES_PORT`     | —        | `5432`  | PostgreSQL port                                 |
-| `ADMIN_IDS`         | —        | —       | Comma-separated admin Telegram IDs              |
-| `SUPPORT_URL`       | —        | —       | Support link shown in /help                     |
