@@ -1,0 +1,36 @@
+# Python
+**/__pycache__/
+**/*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+.claude/
+
+# Git
+.git/
+
+# Logs
+*.log
+/logs/
+
+# OS
+**/.DS_Store
+Thumbs.db
+
+# Admin
+admin/
+*admin.*
+*prod.*

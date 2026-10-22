@@ -6,26 +6,20 @@ readme = "README.md"
 requires-python = ">=3.10"
 
 dependencies = [
-    "aiogram[i18n]>=3.28.0",
-    "aiogram_i18n>=1.4",
-    "fluent_compiler==1.1",
-    "python-dotenv>=1.2.0",
+    "aiogram>=3.28.0",
+    "aiogram_i18n[compiler]>=1.4",
+    "pydantic>=2.4",
     "pydantic-settings>=2.6",
+    "python-dotenv>=1.2.0",
     "ffmpeg-python>=0.2.0",
-    "Pillow>=12.0.0",
-    "rlottie-python>=1.3.0",
     "sqlalchemy[asyncio]>=2.0.49",
     "asyncpg>=0.30.0",
-    "alembic>=1.18.0",
-    "greenlet==3.3.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "ruff",
     "mypy",
-    "pytest",
-    "pytest-asyncio",
 ]
 
 [build-system]
@@ -33,11 +27,12 @@ requires = ["setuptools>=80.10.1"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["."]
-exclude = ["tests*"]
+include = ["bot*"]
 
 [tool.mypy]
 python_version = "3.10"
+strict = true
+plugins = ["pydantic.mypy"]
 explicit_package_bases = true
 exclude = ["^build/"]
 
@@ -50,4 +45,29 @@ line-length = 120
 target-version = "py310"
 
 [tool.ruff.lint]
-select = ["E", "F", "I"]
+select = [
+    "E", "W",  # pycodestyle
+    "F",       # pyflakes
+    "I",       # isort
+    "N",       # pep8-naming
+    "UP",      # pyupgrade
+    "B",       # bugbear
+    "A",       # builtins shadowing
+    "C4",      # comprehensions
+    "SIM",     # simplify
+    "RET",     # return
+    "PIE",     # misc lints
+    "PERF",    # performance
+    "FURB",    # refurb
+    "RUF",     # ruff-specific
+    "ASYNC",   # blocking calls in async code
+    "PTH",     # pathlib over os.path
+    "LOG",     # logging misuse
+    "G",       # logging format
+    "T20",     # print
+    "ISC",     # implicit string concat
+    "TID",     # tidy imports
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["bot"]

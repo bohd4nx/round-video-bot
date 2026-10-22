@@ -19,10 +19,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    command: >
-      sh -c "
-      python main.py
-      "
     depends_on:
       db:
         condition: service_healthy
