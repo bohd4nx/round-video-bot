@@ -32,11 +32,16 @@ def android_filters(src: ffmpeg.nodes.FilterableStream) -> ffmpeg.nodes.Filterab
 
 
 def ios_filters(src: ffmpeg.nodes.FilterableStream) -> ffmpeg.nodes.FilterableStream:
-    # Same circle mask as Android, but composited on white instead of blurred bg
     circle_mask = ffmpeg.input(str(CIRCLE_MASK_PATH))
-    white_bg = ffmpeg.input(f"color=c=white:s={VIDEO_OUTPUT_SIZE}x{VIDEO_OUTPUT_SIZE}:r=60", f="lavfi")
-    circle = ffmpeg.filter([_crop_square(src), circle_mask], "alphamerge")
-    return white_bg.overlay(circle, shortest=1)
+
+    base = _crop_square(src).split()
+
+    # Same circle mask as Android, but composited on white instead of blurred bg.
+    # The background is painted over the video itself, so the output keeps the source frame rate.
+    background = base[1].filter("drawbox", x=0, y=0, w="iw", h="ih", color="white", t="fill")
+
+    foreground = ffmpeg.filter([base[0], circle_mask], "alphamerge")
+    return background.overlay(foreground)
 
 
 def build_filter_graph(src: ffmpeg.nodes.FilterableStream, overlay: Overlay) -> ffmpeg.nodes.FilterableStream:

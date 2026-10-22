@@ -17,10 +17,9 @@ CROP_Y = "(in_h-min(in_w,in_h))/2"
 # ffmpeg output options
 VIDEO_OPTIONS = {
     "vcodec": "libx264",
-    "preset": "ultrafast",
-    "crf": 20,
+    "preset": "veryfast",
+    "crf": 23,
     "pix_fmt": "yuv420p",
-    "tune": "zerolatency",
     "movflags": "+faststart",
     "fpsmax": 60,
     "threads": 0,
